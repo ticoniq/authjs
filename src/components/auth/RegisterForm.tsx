@@ -1,5 +1,5 @@
 "use client";
-import * as zod from 'zod';
+import * as z from 'zod';
 import { useState, useTransition } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,23 +13,18 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import CardWrapper from "@/components/auth/cardWrapper";
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { FormError } from '../FormError';
-import { FormSuccess } from '../FormSuccess';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { FormError } from '@/components/FormError';
+import { FormSuccess } from '@/components/FormSuccess';
 import { register } from '@/actions/register';
-
-interface RegisterResponse {
-  error?: string;
-  success?: string;
-}
 
 export function RegisterForm() {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<zod.infer<typeof RegisterSchema>>({
+  const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: "",
@@ -38,25 +33,16 @@ export function RegisterForm() {
     }
   });
 
-  const onSubmit = (values: zod.infer<typeof RegisterSchema>) => {
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      const handleLogin = async (values: zod.infer<typeof RegisterSchema>) => {
-        try {
-          const data: RegisterResponse = await register(values);
-          if (data.error) {
-            setError(data.error);
-          } else {
-            setSuccess(data.success);
-          }
-        } catch (e) {
-          setError("An unexpected error occurred.");
-        }
-      };
-
-      handleLogin(values);
+      register(values)
+        .then((data) => {
+          setError(data.error);
+          setSuccess(data.success);
+        })
     });
   };
 
@@ -84,7 +70,7 @@ export function RegisterForm() {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="john doe"
+                      placeholder="John doe"
                       type="text"
                     />
                   </FormControl>

@@ -6,7 +6,6 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
-import { Header } from '@/components/auth/header';
 import { Social } from "./Social";
 import BackButton from './BackButton';
 
@@ -27,7 +26,14 @@ const CardWrapper = ({
   return (
     <Card className=" w-full max-w-[400px]">
       <CardHeader>
-        <Header label={headerLabel} />
+        <section className="w-full flex flex-col gap-y-4 items-center">
+          <h1 className="text-3xl font-semibold font-mono">
+            Auth
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {headerLabel}
+          </p>
+        </section>
       </CardHeader>
       <CardContent>
         {children}

@@ -1,13 +1,37 @@
 "use server";
-import * as zod from 'zod';
-import { RegisterSchema } from '@/lib/auth/validation';
+import * as z from "zod";
+import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma";
+import { RegisterSchema } from "@/lib/auth/validation";
+import { getUserByEmail } from "@/data/user";
+import { generateVerificationToken } from "@/lib/auth/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
 
-export const register = async (values: Zod.infer<typeof RegisterSchema>) => {
+export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
-    return { error: "Invalid fields"}
+    return { error: "Invalid fields" };
   }
 
-  console.log("Registering user with values:", values);
-  return { success: "Email sent!" }
+  const { name, email, password } = validatedFields.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const existingUser = await getUserByEmail(email);
+
+  if (existingUser) {
+    return { error: "Email already exists" };
+  }
+
+  await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+    },
+  });
+
+  const verificationToken = await generateVerificationToken(email);
+
+  sendVerificationEmail(verificationToken.email, verificationToken.token);
+
+  return { success: "Confirmation email sent!" };
 };

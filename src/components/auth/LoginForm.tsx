@@ -1,9 +1,10 @@
 "use client";
-import * as zod from 'zod';
+import * as z from 'zod';
 import { useState, useTransition } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from '@/lib/auth/validation';
+import { useSearchParams } from 'next/navigation';
 import {
   Form,
   FormControl,
@@ -19,43 +20,42 @@ import { FormError } from '../FormError';
 import { FormSuccess } from '../FormSuccess';
 import { login } from '@/actions/login';
 
-interface LoginResponse {
-  error?: string;
-  success?: string;
-}
-
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with other provider!"
+      : "";
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<zod.infer<typeof LoginSchema>>({
+  const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
-      password: ""
+      password: "",
     }
   });
 
-  const onSubmit = (values: zod.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      const handleLogin = async (values: zod.infer<typeof LoginSchema>) => {
-        try {
-          const data: LoginResponse = await login(values);
-          if (data.error) {
+      login(values)
+        .then((data) => {
+          if (data?.error) {
             setError(data.error);
-          } else {
-            setSuccess(data.success);
           }
-        } catch (e) {
-          setError("An unexpected error occurred.");
-        }
-      };
-
-      handleLogin(values);
+          if (data?.success) {
+            setSuccess(data?.success);
+            form.reset();
+          }
+        })
+        .catch(() => {
+          setError("An error occurred. Please try again.");
+        });
     });
   };
 
@@ -110,7 +110,7 @@ export function LoginForm() {
               )}
             />
           </div>
-          <FormError message={error} />
+          <FormError message={error || urlError} />
           <FormSuccess message={success} />
           <Button
             disabled={isPending}
