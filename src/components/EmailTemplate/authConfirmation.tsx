@@ -1,46 +1,237 @@
-import React from 'react'
+import {
+  Body,
+  Container,
+  Column,
+  Head,
+  Heading,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Text,
+} from "@react-email/components";
+import * as React from "react";
 
-type Props = {
+interface authConfirmationProps {
+  validationCode?: string;
   link: string;
 }
 
-function authConfirmation({ link }: Props) {
-  return (
-    <section className="max-w-2xl px-6 py-8 mx-auto bg-white dark:bg-gray-900">
-      <header>
-        <a href="#">
-          
-        </a>
-      </header>
+export const authConfirmation = ({
+  link
+}: authConfirmationProps) => (
+  <Html>
+    <Head />
+    <Preview>Confirm your email address</Preview>
+    <Body style={main}>
+      <Container style={container}>
+        <Section style={logoContainer}>
+          <Img
+            src={`${link}/static/slack-logo.png`}
+            width="120"
+            height="36"
+            alt="Slack"
+          />
+        </Section>
+        <Heading style={h1}>Confirm your email address</Heading>
+        <Text style={heroText}>
+          Your confirmation code is below - enter it in your open browser window
+          and we will help you get signed in.
+        </Text>
 
-      <main className="mt-8">
-        <h2 className="text-gray-700 dark:text-gray-200">Hi Olivia,</h2>
+        <Link
+          href={link}
+          target="_blank"
+          style={{
+            display: "block",
+            marginBottom: "16px",
+          }}
+        >
+          Click here to log in with this magic link
+        </Link>
 
-        <p className="mt-2 leading-loose text-gray-600 dark:text-gray-300">
-          Alicia has invited you to join the team on <span className="font-semibold ">Meraki UI</span>.
-        </p>
+        <Text style={text}>
+          If you didnt request this email, theres nothing to worry about, you
+          can safely ignore it.
+        </Text>
 
-        <a href={link} className="px-6 py-2 mt-4 text-sm font-medium tracking-wider text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
-          Accept the invite
-        </a>
+        <Section>
+          <Row style={footerLogos}>
+            <Column style={{ width: "66%" }}>
+              <Img
+                src={`${link}/static/slack-logo.png`}
+                width="120"
+                height="36"
+                alt="Slack"
+              />
+            </Column>
+            <Column>
+              <Section>
+                <Row>
+                  <Column>
+                    <Link href="/">
+                      <Img
+                        src={`${link}/static/slack-twitter.png`}
+                        width="32"
+                        height="32"
+                        alt="Slack"
+                        style={socialMediaIcon}
+                      />
+                    </Link>
+                  </Column>
+                  <Column>
+                    <Link href="/">
+                      <Img
+                        src={`${link}/static/slack-facebook.png`}
+                        width="32"
+                        height="32"
+                        alt="Slack"
+                        style={socialMediaIcon}
+                      />
+                    </Link>
+                  </Column>
+                  <Column>
+                    <Link href="/">
+                      <Img
+                        src={`${link}/static/slack-linkedin.png`}
+                        width="32"
+                        height="32"
+                        alt="Slack"
+                        style={socialMediaIcon}
+                      />
+                    </Link>
+                  </Column>
+                </Row>
+              </Section>
+            </Column>
+          </Row>
+        </Section>
 
-        <p className="mt-8 text-gray-600 dark:text-gray-300">
-          Thanks, <br />
-            Jobconiq
-        </p>
-      </main>
+        <Section>
+          <Link
+            style={footerLink}
+            href="https://slackhq.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Our blog
+          </Link>
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+          <Link
+            style={footerLink}
+            href="https://slack.com/legal"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Policies
+          </Link>
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+          <Link
+            style={footerLink}
+            href="https://slack.com/help"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Help center
+          </Link>
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+          <Link
+            style={footerLink}
+            href="https://slack.com/community"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-auth="NotApplicable"
+            data-linkindex="6"
+          >
+            Slack Community
+          </Link>
+          <Text style={footerText}>
+            ©2022 Slack Technologies, LLC, a Salesforce company. <br />
+            500 Howard Street, San Francisco, CA 94105, USA <br />
+            <br />
+            All rights reserved.
+          </Text>
+        </Section>
+      </Container>
+    </Body>
+  </Html>
+);
 
+export default authConfirmation;
 
-      <footer className="mt-8">
-        <p className="text-gray-500 dark:text-gray-400">
-          This email was sent to <a href="#" className="text-blue-600 hover:underline dark:text-blue-400" target="_blank">contact@merakiui.com</a>.
-          If youd rather not receive this kind of email, you can <a href="#" className="text-blue-600 hover:underline dark:text-blue-400">unsubscribe</a> or <a href="#" className="text-blue-600 hover:underline dark:text-blue-400">manage your email preferences</a>.
-        </p>
+const footerText = {
+  fontSize: "12px",
+  color: "#b7b7b7",
+  lineHeight: "15px",
+  textAlign: "left" as const,
+  marginBottom: "50px",
+};
 
-        <p className="mt-3 text-gray-500 dark:text-gray-400">© { new Date().getFullYear() } Jobconiq. All Rights Reserved.</p>
-      </footer>
-    </section>
-  )
-}
+const footerLink = {
+  color: "#b7b7b7",
+  textDecoration: "underline",
+};
 
-export default authConfirmation
+const footerLogos = {
+  marginBottom: "32px",
+  paddingLeft: "8px",
+  paddingRight: "8px",
+  width: "100%",
+};
+
+const socialMediaIcon = {
+  display: "inline",
+  marginLeft: "32px",
+};
+
+const main = {
+  backgroundColor: "#ffffff",
+  margin: "0 auto",
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+};
+
+const container = {
+  margin: "0 auto",
+  padding: "0px 20px",
+};
+
+const logoContainer = {
+  marginTop: "32px",
+};
+
+const h1 = {
+  color: "#1d1c1d",
+  fontSize: "36px",
+  fontWeight: "700",
+  margin: "30px 0",
+  padding: "0",
+  lineHeight: "42px",
+};
+
+const heroText = {
+  fontSize: "20px",
+  lineHeight: "28px",
+  marginBottom: "30px",
+};
+
+const codeBox = {
+  background: "rgb(245, 244, 245)",
+  borderRadius: "4px",
+  marginBottom: "30px",
+  padding: "40px 10px",
+};
+
+const confirmationCodeText = {
+  fontSize: "30px",
+  textAlign: "center" as const,
+  verticalAlign: "middle",
+};
+
+const text = {
+  color: "#000",
+  fontSize: "14px",
+  lineHeight: "24px",
+};

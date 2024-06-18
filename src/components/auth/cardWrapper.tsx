@@ -9,7 +9,7 @@ import {
 import { Social } from "./Social";
 import BackButton from './BackButton';
 
-type Props = {
+interface Props {
   children: React.ReactNode;
   headerLabel: string;
   backButtonLabel: string;

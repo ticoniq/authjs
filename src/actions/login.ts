@@ -7,6 +7,7 @@ import { AuthError } from "next-auth";
 import { generateVerificationToken } from "@/lib/auth/tokens";
 import { getUserByEmail } from "@/data/user";
 import { sendVerificationEmail } from "@/lib/mail";
+import bcrypt from "bcryptjs";
 
 export const login = async (values: zod.infer<typeof LoginSchema>) => {
   const validatedFields = LoginSchema.safeParse(values);
@@ -21,6 +22,12 @@ export const login = async (values: zod.infer<typeof LoginSchema>) => {
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return { error: "Email does not exist" };
+  }
+
+  const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+  if (!passwordMatch) {
+    return { error: "Invalid email or password" };
   }
 
   if (!existingUser.emailVerified) {

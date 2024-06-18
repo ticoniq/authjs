@@ -3,8 +3,7 @@ import * as z from 'zod';
 import { useState, useTransition } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from '@/lib/auth/validation';
-import { useSearchParams } from 'next/navigation';
+import { NewPasswordSchema } from '@/lib/auth/validation';
 import {
   Form,
   FormControl,
@@ -18,33 +17,31 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { FormError } from '../FormError';
 import { FormSuccess } from '../FormSuccess';
-import { login } from '@/actions/login';
-import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { newPassword } from '@/actions/newPassword';
 
-export function LoginForm() {
+export function NewPasswordForm() {
   const searchParams = useSearchParams();
-  const urlError =
-    searchParams.get("error") === "OAuthAccountNotLinked"
-      ? "Email already in use with other provider!"
-      : "";
+  const token = searchParams.get("token");
+
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof NewPasswordSchema>>({
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     }
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      login(values)
+      newPassword(values, token)
         .then((data) => {
           if (data?.error) {
             setError(data.error);
@@ -60,32 +57,28 @@ export function LoginForm() {
     });
   };
 
+
   return (
     <CardWrapper
-      headerLabel={"Welcome Back"}
-      backButtonLabel={"Don't have an account?"}
-      backButtonLink={"/auth/register"}
-      showSocials
+      headerLabel={"Enter a new password?"}
+      backButtonLabel={"Back to login?"}
+      backButtonLink={"/auth/signin"}
     >
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-          noValidate
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>New Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
+                      placeholder="******"
+                      type="password"
                       disabled={isPending}
-                      placeholder="johndoe@example.com"
-                      type="email"
                     />
                   </FormControl>
                   <FormMessage />
@@ -94,24 +87,16 @@ export function LoginForm() {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center">
-                    <FormLabel>Password</FormLabel>
-                    <Link
-                      href="/auth/forgot-password"
-                      className="ml-auto inline-block text-sm underline"
-                    >
-                      Forgot your password?
-                    </Link>
-                  </div>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isPending}
-                      placeholder="********"
+                      placeholder="******"
                       type="password"
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -119,17 +104,13 @@ export function LoginForm() {
               )}
             />
           </div>
-          <FormError message={error || urlError} />
+          <FormError message={error} />
           <FormSuccess message={success} />
-          <Button
-            disabled={isPending}
-            type="submit"
-            className="w-full"
-          >
-            Login
+          <Button type="submit" disabled={isPending} className="w-full">
+            Reset Password
           </Button>
         </form>
       </Form>
     </CardWrapper>
-  );
+  )
 }

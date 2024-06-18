@@ -6,7 +6,7 @@ import { FaGithub } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
-type SocialProps = {}
+interface SocialProps {}
 
 export function Social({ }: SocialProps) {
   const handelSignIn = (provider: "google" | "github") => {
