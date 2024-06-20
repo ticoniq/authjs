@@ -9,7 +9,7 @@ export const getUserByEmail = async (email: string) => {
    });
 
    return user;
- } catch (e) {
+ } catch {
     return null;
   }
 }
@@ -23,7 +23,7 @@ export const getUserById = async (id: string) => {
    });
 
    return user;
- } catch (e) {
+ } catch {
     return null;
   }
 }

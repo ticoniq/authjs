@@ -14,16 +14,18 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          UserRole  @default(USER)
-  // isTwoFactorEnabled Boolean @default(false)
-  accounts      Account[]
-  // twoFactorAuhentication TwoFactorAuthentication?// @relation(fields: [id], references: [userId], onDelete: Cascade) one to one
+  id                     String                   @id @default(cuid())
+  name                   String?
+  email                  String?                  @unique
+  emailVerified          DateTime?
+  image                  String?
+  password               String?
+  role                   UserRole                 @default(USER)
+  isTwoFactorEnabled     Boolean                  @default(false)
+  accounts               Account[]
+  twoFactorAuhentication TwoFactorAuthentication?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
 
   @@map("users")
 }
@@ -60,25 +62,29 @@ model VerificationToken {
 
 model PasswordResetToken {
   id        String   @id @default(cuid())
-  email     String  
+  email     String
   token     String   @unique
   expiresAt DateTime
+
   @@unique([email, token])
   @@map("passwordresettokens")
 }
 
-// model TwoFactorToken {
-//   id        String   @id @default(cuid())
-//   token     String   @unique
-//   email    String
-//   expiresAt DateTime
-//   @@unique([email, token])
-// }
+model TwoFactorToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
 
-// model TwoFactorAuthentication {
-//   id        String   @id @default(cuid())
-//   userId    String @unique
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)// one to one
-// }
+  @@unique([email, token])
+  @@map("twofactortokens")
+}
+
+model TwoFactorAuthentication {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("twofactorauthentications")
+}
