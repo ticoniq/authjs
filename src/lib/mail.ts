@@ -19,7 +19,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 export const sendForgotPasswordEmail = async (email: string, token: string) => {
   const ResetLink = `${websiteUrl}/auth/new-password?token=${token}`;
   await resend.emails.send({
-    from: "Jobconiq <info@tochidev.com>",
+    from: `Jobconiq <info@tochidev.com>`,
     to: email,
     subject: "Reset your Password",
     react: ResetPasswordEmail({ resetPasswordLink: ResetLink }),
